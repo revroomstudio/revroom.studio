@@ -205,7 +205,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
             <li><strong>Receive your drawings</strong><span>Final drawings and renders, with scope and revisions agreed upfront.</span></li>
           </ol>
           <div class="cta-row send">
-            <a class="btn" href="mailto:revroom.studio@gmail.com?subject=House%20plan%20or%20interior%20enquiry&body=Plot%20size%3A%0ALocation%3A%0AService%20needed%3A%0ABudget%20range%3A">Request a quote</a>
+            <a class="btn mail" href="mailto:revroom.studio@gmail.com?subject=House%20plan%20or%20interior%20enquiry&body=Plot%20size%3A%0ALocation%3A%0AService%20needed%3A%0ABudget%20range%3A">Request a quote</a>
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
             <li>Hand sketch</li><li>PDF</li><li>Image</li><li>Concept plan</li>
           </ul>
           <div class="cta-row send">
-            <a class="btn" href="mailto:revroom.studio@gmail.com?subject=CAD%20or%203D%20production%20enquiry&body=Service%20needed%3A%0AFile%20type%3A%0ADeadline%3A">Send your drawing</a>
+            <a class="btn mail" href="mailto:revroom.studio@gmail.com?subject=CAD%20or%203D%20production%20enquiry&body=Service%20needed%3A%0AFile%20type%3A%0ADeadline%3A">Send your drawing</a>
           </div>
         </div>
       </div>
@@ -255,9 +255,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
     <div class="wrap">
       <div>
         <h2>Tell us about your project</h2>
-        <p class="sub">Send your plot size, sketch or drawing and we will get back to you with scope and a quote.</p>
+        <p class="sub">Send your plot size, sketch or drawing and we will get back to you with scope and a quote. You can also write to <strong>revroom.studio@gmail.com</strong>.</p>
         <div class="cta-row">
-          <a class="btn" href="mailto:revroom.studio@gmail.com?subject=Project%20enquiry">Email us</a>
+          <a class="btn mail" href="mailto:revroom.studio@gmail.com?subject=Project%20enquiry">Email us</a>
           <a class="btn ghost" href="https://www.instagram.com/revroom.studio/" rel="noopener" target="_blank">Message on Instagram</a>
           <!-- WHATSAPP: add a button here once the RevRoom number is ready -->
         </div>
@@ -275,6 +275,22 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
+  // On desktop, mailto: often does nothing. Open Gmail compose instead; keep mailto on phones.
+  (function(){
+    var mobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent);
+    if (mobile) return;
+    document.querySelectorAll('a.mail').forEach(function(a){
+      var u = new URL(a.getAttribute('href'));
+      var params = new URLSearchParams(u.search);
+      var g = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(u.pathname)
+            + '&su=' + encodeURIComponent(params.get('subject') || '')
+            + '&body=' + encodeURIComponent(params.get('body') || '');
+      a.setAttribute('href', g);
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener');
+    });
+  })();
+
   var p = document.getElementById('plan');
   requestAnimationFrame(function(){ p.classList.add('go'); });
 </script>
