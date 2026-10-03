@@ -68,6 +68,8 @@ h1 span{display:block}
 .item[data-pos="1"] .lab{transform:translateY(-12px)}
 .card{height:var(--ch);border-radius:10px;overflow:hidden;box-shadow:0 18px 36px rgba(0,0,0,.45);background:var(--paper);position:relative}
 .card img{width:100%;height:100%;object-fit:cover;display:block}
+.card.sheet{background:#F5ECDE}
+.card.sheet img{object-fit:cover;object-position:42% 50%}
 .lab{display:block;position:relative;z-index:5;margin-top:32px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white)}
 .card svg{display:block;width:100%;height:100%}
 .showcase .draw{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:square;stroke-dasharray:1;stroke-dashoffset:1}
@@ -174,19 +176,8 @@ footer a{text-decoration:none;margin-left:16px}footer a:hover{color:#fff}</style
       <figure class="showcase" id="plan">
         <div class="stack" id="stack" aria-label="Plan, elevation and interior examples. Hover to browse, tap to advance." role="group">
           <div class="item" data-pos="0">
-            <div class="card">
-              <svg viewBox="0 0 240 320" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Line drawing of a house floor plan">
-                <path class="draw" pathLength="1" d="M16 16H224V304H16Z"/>
-                <path class="draw" pathLength="1" d="M130 16V120M130 156V304M130 210H224M16 190H90"/>
-                <path class="thin" pathLength="1" d="M130 120A36 36 0 0 1 166 156M130 120V156"/>
-                <path class="thin" pathLength="1" d="M146 16H206M146 22H206"/>
-                <path class="thin" pathLength="1" d="M30 240H100V284H30ZM30 240V224H100V240"/>
-                <path class="thin" pathLength="1" d="M146 40H210V110H146ZM146 58H210"/>
-                <path class="thin" pathLength="1" d="M150 236H206V280H150Z"/>
-                <text x="32" y="110">Living</text>
-                <text x="148" y="140">Bedroom</text>
-                <text x="156" y="260">Toilet</text>
-              </svg>
+            <div class="card sheet">
+              <img src="hero-plan.jpg" alt="Dimensioned floor plan of a two-bedroom house" width="900" height="846">
             </div>
             <span class="lab">Plan</span>
           </div>
