@@ -58,14 +58,16 @@ h1 span{display:block}
 .dark .btn.ghost:hover{background:var(--white);color:var(--green);border-color:var(--white)}
 
 .showcase{background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.18);border-radius:14px;padding:30px 18px 18px;margin:0}
-.stack{display:flex;justify-content:center;align-items:flex-start;perspective:1100px;padding:6px 0}
-.item{flex:0 0 34%;margin-left:-6%;text-align:center}
-.item:first-child{margin-left:0}
-.card{height:clamp(200px,24vw,280px);border-radius:10px;overflow:hidden;box-shadow:0 18px 36px rgba(0,0,0,.45);background:var(--paper);position:relative}
+.stack{--ch:clamp(200px,24vw,280px);position:relative;height:calc(var(--ch) + 70px);perspective:1100px;cursor:pointer;touch-action:pan-y}
+.item{position:absolute;top:8px;width:36%;text-align:center;transition:left .8s cubic-bezier(.4,.1,.2,1),transform .8s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
+.item[data-pos="0"]{left:3%;z-index:1;transform:rotateY(16deg) scale(.92);transform-origin:right center}
+.item[data-pos="1"]{left:32%;z-index:3;transform:scale(1.04) translateY(8px)}
+.item[data-pos="2"]{left:61%;z-index:2;transform:rotateY(-16deg) scale(.92);transform-origin:left center}
+.item .lab{transition:opacity .6s,transform .8s}
+.item:not([data-pos="1"]) .lab{opacity:.65}
+.item[data-pos="1"] .lab{transform:translateY(-12px)}
+.card{height:var(--ch);border-radius:10px;overflow:hidden;box-shadow:0 18px 36px rgba(0,0,0,.45);background:var(--paper);position:relative}
 .card img{width:100%;height:100%;object-fit:cover;display:block}
-.i-plan{z-index:1;flex-basis:41%}.i-plan .card{transform:rotateY(16deg) scale(.94);transform-origin:right center}
-.i-elev{z-index:3}.i-elev .card{transform:scale(1.04) translateY(10px)}
-.i-int{z-index:2}.i-int .card{transform:rotateY(-16deg) scale(.96);transform-origin:left center}
 .lab{display:block;position:relative;z-index:5;margin-top:32px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--white)}
 .card svg{display:block;width:100%;height:100%}
 .showcase .draw{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:square;stroke-dasharray:1;stroke-dashoffset:1}
@@ -77,8 +79,8 @@ h1 span{display:block}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes fade{to{opacity:1}}
 .showcase figcaption{margin-top:16px;font-size:.85rem;color:var(--muted-on-dark)}
-@media (max-width:820px){.card{height:clamp(170px,40vw,280px)}}
-@media (prefers-reduced-motion:reduce){.showcase .draw,.showcase .thin{stroke-dashoffset:0;animation:none!important}.showcase text{opacity:1;animation:none!important}}
+@media (max-width:820px){.stack{--ch:clamp(170px,40vw,280px)}}
+@media (prefers-reduced-motion:reduce){.item{transition:none}.showcase .draw,.showcase .thin{stroke-dashoffset:0;animation:none!important}.showcase text{opacity:1;animation:none!important}}
 
 section{padding:80px 0}
 section.alt{background:var(--white)}
@@ -136,7 +138,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   section{padding:56px 0}
   .contact .mark{margin:8px auto 0;max-width:280px}
 }
-@media (prefers-reduced-motion:reduce){
+@media (prefers-reduced-motion:reduce){.item{transition:none}
   html{scroll-behavior:auto}
   .plan .draw,.plan .thin{stroke-dashoffset:0;animation:none!important}
   .plan .fill,.plan .tag{opacity:1;animation:none!important}
@@ -170,8 +172,8 @@ footer a{text-decoration:none;margin-left:16px}footer a:hover{color:#fff}</style
       </div>
 
       <figure class="showcase" id="plan">
-        <div class="stack">
-          <div class="item i-plan">
+        <div class="stack" id="stack" aria-label="Plan, elevation and interior examples. Hover to browse, tap to advance." role="group">
+          <div class="item" data-pos="0">
             <div class="card">
               <svg viewBox="0 0 240 320" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Line drawing of a house floor plan">
                 <path class="draw" pathLength="1" d="M16 16H224V304H16Z"/>
@@ -188,11 +190,11 @@ footer a{text-decoration:none;margin-left:16px}footer a:hover{color:#fff}</style
             </div>
             <span class="lab">Plan</span>
           </div>
-          <div class="item i-elev">
+          <div class="item" data-pos="1">
             <div class="card"><img src="hero-elevation.jpg" alt="3D render of a house elevation at dusk" width="272" height="333"></div>
             <span class="lab">Elevation</span>
           </div>
-          <div class="item i-int">
+          <div class="item" data-pos="2">
             <div class="card"><img src="hero-interior.jpg" alt="3D render of a living room interior" width="268" height="352"></div>
             <span class="lab">Interior</span>
           </div>
@@ -312,6 +314,17 @@ footer a{text-decoration:none;margin-left:16px}footer a:hover{color:#fff}</style
     });
   })();
 
+  var st = document.getElementById('stack');
+  if (st) {
+    var items = [].slice.call(st.querySelectorAll('.item')), timer = null;
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function step(){ items.forEach(function(it){ it.setAttribute('data-pos', (+it.getAttribute('data-pos') + 2) % 3); }); }
+    function start(){ if (!reduce && !timer) { step(); timer = setInterval(step, 2200); } }
+    function stop(){ clearInterval(timer); timer = null; }
+    st.addEventListener('mouseenter', start);
+    st.addEventListener('mouseleave', stop);
+    st.addEventListener('click', function(){ stop(); step(); });
+  }
   var p = document.getElementById('plan');
   requestAnimationFrame(function(){ p.classList.add('go'); });
 </script>
