@@ -83,8 +83,8 @@ footer .wrap{max-width:1120px}
   </header>
   <div class="intro">
     <div class="wrap">
-      <h1>Request a quote</h1>
-      <p>Tell us about your project and attach sketches, photos or drawings. We will reply with scope and a quote.</p>
+      <h1 id="h">Request a quote</h1>
+      <p id="intro">Tell us about your project and attach sketches, photos or drawings. We will reply with scope and a quote.</p>
     </div>
   </div>
 </div>
@@ -92,13 +92,13 @@ footer .wrap{max-width:1120px}
 <main>
   <div class="wrap">
     <form id="quote" action="https://formsubmit.co/revroom.studio@gmail.com" method="POST" enctype="multipart/form-data" novalidate>
-      <input type="hidden" name="_subject" value="New RevRoom.Studio enquiry">
+      <input type="hidden" name="_subject" id="subject" value="New RevRoom.Studio enquiry">
       <input type="hidden" name="_template" value="table">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_next" value="https://revroomstudio.online/thanks.html">
       <div class="hp" aria-hidden="true"><label>Leave this empty <input type="text" name="_honey" tabindex="-1" autocomplete="off"></label></div>
 
-      <fieldset>
+      <fieldset id="fs-about">
         <legend>About you</legend>
         <div class="field">
           <span class="lbl" id="who-lbl">I am a</span>
@@ -115,13 +115,13 @@ footer .wrap{max-width:1120px}
         <div class="field"><label for="email">Email <span class="opt">(optional)</span></label><input type="email" id="email" name="email" autocomplete="email"></div>
       </fieldset>
 
-      <fieldset>
+      <fieldset id="fs-project">
         <legend>Your project</legend>
         <div class="field">
           <label for="service">Service needed</label>
           <select id="service" name="Service" required>
             <option value="">Select a service</option>
-            <optgroup label="For your home">
+            <optgroup label="For your home" id="og-home">
               <option>House plan</option>
               <option>Complete house design</option>
               <option>Interior design</option>
@@ -144,11 +144,11 @@ footer .wrap{max-width:1120px}
           <div class="field"><label for="budget">Budget <span class="opt">(optional)</span></label><input type="text" id="budget" name="Budget"></div>
           <div class="field"><label for="deadline">Deadline <span class="opt">(optional)</span></label><input type="text" id="deadline" name="Deadline"></div>
         </div>
-        <div class="field"><label for="msg">Describe your requirements</label><textarea id="msg" name="Message" required></textarea></div>
+        <div class="field"><label for="msg" id="msg-lbl">Describe your requirements</label><textarea id="msg" name="Message" required></textarea></div>
       </fieldset>
 
-      <fieldset>
-        <legend>Attach files <span class="opt">(optional)</span></legend>
+      <fieldset id="fs-files">
+        <legend id="files-legend">Attach files <span class="opt">(optional)</span></legend>
         <div class="drop">
           <p>Photos of the site or room, hand-drawn sketches, PDFs, CAD files</p>
           <input type="file" id="files" name="attachment" multiple accept=".jpg,.jpeg,.png,.webp,.heic,.pdf,.dwg,.dxf,.skp,.zip,.doc,.docx" aria-describedby="filehint">
@@ -161,6 +161,7 @@ footer .wrap{max-width:1120px}
       <p class="err" id="err" role="alert"></p>
       <button class="btn" type="submit" id="send">Send enquiry</button>
       <p class="fine">We use your details only to reply to this enquiry.</p>
+      <p class="fine" id="switch"></p>
     </form>
   </div>
 </main>
@@ -171,9 +172,24 @@ footer .wrap{max-width:1120px}
 (function(){
   document.getElementById('yr').textContent = new Date().getFullYear();
 
-  // Preselect audience and service from the link used to get here
-  var q = new URLSearchParams(location.search).get('for');
-  if (q === 'pro') document.getElementById('w-pro').checked = true;
+  // Two modes: default (homeowner quote) and ?for=pro (send your drawing)
+  var pro = new URLSearchParams(location.search).get('for') === 'pro';
+  var sw = document.getElementById('switch');
+  if (pro){
+    document.title = 'Send your drawing | RevRoom.Studio';
+    document.getElementById('h').textContent = 'Send your drawing';
+    document.getElementById('intro').textContent = 'Attach your sketch, PDF or image and tell us what you need. We will reply with scope and a quote.';
+    document.getElementById('w-pro').checked = true;
+    document.getElementById('subject').value = 'New RevRoom.Studio drawing submission';
+    var og = document.getElementById('og-home'); if (og) og.remove();
+    document.getElementById('msg-lbl').textContent = 'What do you need done?';
+    document.getElementById('files-legend').innerHTML = 'Your drawing <span class="opt">(attach a file, or paste a Drive / WeTransfer link below)</span>';
+    var form0 = document.getElementById('quote');
+    form0.insertBefore(document.getElementById('fs-files'), document.getElementById('fs-about'));
+    sw.innerHTML = 'Planning a home instead? <a href="quote.html">Request a house plan or interior quote</a>.';
+  } else {
+    sw.innerHTML = 'Are you an architect, designer or builder? <a href="quote.html?for=pro">Send your drawing</a>.';
+  }
 
   var MAX = 10 * 1024 * 1024;
   var input = document.getElementById('files');
@@ -214,6 +230,12 @@ footer .wrap{max-width:1120px}
       e.preventDefault();
       err.textContent = 'Please fill in your name, phone, service and requirements.';
       missing[0].focus();
+      return;
+    }
+    if (pro && !input.files.length && !/https?:\/\//i.test(document.getElementById('msg').value)){
+      e.preventDefault();
+      err.textContent = 'Please attach your drawing, or paste a Google Drive or WeTransfer link in the description.';
+      input.focus();
       return;
     }
     if (refresh() > MAX){
